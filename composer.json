@@ -77,7 +77,7 @@
         "lorenzo/cakephp-email-queue": "dev-master#30c24a0dbebd5a91ce7db9ce3a67db1a0d4711e3",
         "imagine/imagine": "^1.5.1",
         "league/flysystem": "^3.29.1",
-        "cakephp/authentication": "^3.0",
+        "cakephp/authentication": "^4.2",
         "bcrowe/cakephp-api-pagination": "dev-cakephp5#b103542e1b02c2a000862d91a804ecde6d4669b0",
         "firebase/php-jwt": "^7.0.0",
         "spomky-labs/otphp": "^11.4.3",
