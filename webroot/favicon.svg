@@ -75,7 +75,7 @@
   <!-- Background -->
   <rect width="1024" height="1024" rx="160" fill="url(#bgGrad)"/>
 
-  <g id="pbolt-mark">
+  <g id="haspr-mark">
     <!-- Padlock Shackle / P Upper Arch - Left -->
     <polygon id="shackle-left" points="370.0,268.5 403.0,270.5 436.0,287.5 459.5,315.0 471.5,349.0 441.0,395.5 436.5,348.0 422.5,323.0 397.0,303.5 364.0,302.5 350.5,313.0 343.5,329.0 342.5,414.0 331.0,421.5 316.0,419.5 310.5,414.0 310.5,331.0 315.5,310.0 334.0,283.5" fill="url(#cyanShackleLeft)"/>
 

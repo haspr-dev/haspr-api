@@ -45,9 +45,9 @@ ddev exec -d /var/www/html "vendor/bin/phpunit --filter <TestName>"
 
 ## Contributing to the Clients
 
-* Browser extension (Firefox, Edge & Chrome): https://github.com/pbolt-dev/pbolt-browser-extension
-* Styleguide: https://github.com/pbolt-dev/pbolt-styleguide
-* CLI: https://github.com/pbolt-dev/go-passbolt-cli
+* Browser extension (Firefox, Edge & Chrome): https://github.com/haspr-dev/haspr-browser-extension
+* Styleguide: https://github.com/haspr-dev/haspr-styleguide
+* CLI: https://github.com/haspr-dev/go-passbolt-cli
 
 ## How do I contribute to translations
 

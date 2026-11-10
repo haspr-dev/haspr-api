@@ -1,6 +1,6 @@
 <svg width="320" height="79" viewBox="0 0 320 79" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="pboltGradW" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="hasprGradW" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#38bdf8"/>
       <stop offset="100%" stop-color="#0284c7"/>
     </linearGradient>
@@ -13,16 +13,16 @@
   <g transform="translate(10, 8)">
     <rect width="63" height="63" rx="14" fill="#1e293b"/>
     <!-- Padlock Arch -->
-    <path d="M22 27 V20 C22 14.5 26.5 10 32 10 C37.5 10 42 14.5 42 20 V27" stroke="url(#pboltGradW)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M22 27 V20 C22 14.5 26.5 10 32 10 C37.5 10 42 14.5 42 20 V27" stroke="url(#hasprGradW)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
     <!-- Padlock Body -->
-    <rect x="18" y="27" width="28" height="24" rx="6" fill="url(#pboltGradW)"/>
+    <rect x="18" y="27" width="28" height="24" rx="6" fill="url(#hasprGradW)"/>
     <!-- Lightning Bolt Accent -->
     <path d="M33 29 L28 39 H33 L31 47 L37 37 H32 Z" fill="url(#boltGradW)"/>
   </g>
-  <!-- Typography 'pbolt' -->
+  <!-- Typography 'haspr' -->
   <g transform="translate(88, 54)">
     <text font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="44" font-weight="800" letter-spacing="-1.5">
-      <tspan fill="#ffffff">p</tspan><tspan fill="#38bdf8">bolt</tspan>
+      <tspan fill="#ffffff">has</tspan><tspan fill="#38bdf8">pr</tspan>
     </text>
   </g>
 </svg>

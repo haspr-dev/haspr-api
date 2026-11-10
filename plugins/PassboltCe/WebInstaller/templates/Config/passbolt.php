@@ -25,9 +25,9 @@
  * by a copy of passbolt.default.php
  * Do not modify default.php or you may break your upgrade process.
  *
- * Read more about how to install passbolt: https://doc.pbolt.dev/hosting/
- * Any issue, check out our FAQ: https://doc.pbolt.dev/
- * An installation issue? Ask for help to the community: https://github.com/pbolt-dev/pbolt-docs/discussions
+ * Read more about how to install passbolt: https://doc.haspr.dev/hosting/
+ * Any issue, check out our FAQ: https://doc.haspr.dev/
+ * An installation issue? Ask for help to the community: https://github.com/haspr-dev/haspr-docs/discussions
  */
 return [
     'App' => [

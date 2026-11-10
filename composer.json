@@ -1,7 +1,7 @@
 {
     "name": "passbolt/passbolt_api",
     "description": "Open source password manager for teams",
-    "homepage": "https://doc.pbolt.dev",
+    "homepage": "https://doc.haspr.dev",
     "type": "application",
     "license": "AGPL-3.0-or-later",
     "keywords": [
