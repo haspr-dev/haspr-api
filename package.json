@@ -15,7 +15,7 @@
   ],
   "author": "Passbolt SA",
   "license": "AGPL-3.0",
-  "homepage": "https://www.passbolt.com",
+  "homepage": "https://doc.pbolt.dev",
   "devDependencies": {
     "@babel/runtime": "^7.27.0",
     "@babel/runtime-corejs3": "^7.26.10",
