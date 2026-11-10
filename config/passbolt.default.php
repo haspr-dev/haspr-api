@@ -26,9 +26,9 @@
  * To see all available options, you can refer to the default.php file, and modify passsbolt.php accordingly.
  * Do not modify default.php or you may break your upgrade process.
  *
- * Read more about how to install passbolt: https://www.passbolt.com/help/tech/install
- * Any issue, check out our FAQ: https://www.passbolt.com/faq
- * An installation issue? Ask for help to the community: https://community.passbolt.com/
+ * Read more about how to install passbolt: https://doc.pbolt.dev/hosting/
+ * Any issue, check out our FAQ: https://doc.pbolt.dev/
+ * An installation issue? Ask for help to the community: https://github.com/pbolt-dev/pbolt-docs/discussions
  */
 return [
 

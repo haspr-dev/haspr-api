@@ -45,11 +45,10 @@ ddev exec -d /var/www/html "vendor/bin/phpunit --filter <TestName>"
 
 ## Contributing to the Clients
 
-* Browser extension(Firefox, Edge & Chrome): https://github.com/passbolt/passbolt_browser_extension
-* Styleguide: https://github.com/passbolt/passbolt_styleguide
-* CLI: https://github.com/passbolt/go-passbolt-cli
-* Windows desktop application: https://github.com/passbolt/passbolt-windows
+* Browser extension (Firefox, Edge & Chrome): https://github.com/pbolt-dev/pbolt-browser-extension
+* Styleguide: https://github.com/pbolt-dev/pbolt-styleguide
+* CLI: https://github.com/pbolt-dev/go-passbolt-cli
 
-## How do I contribute to the translation
+## How do I contribute to translations
 
-For contributing to the translations of this repository, you will need to create an account and propose changes at https://passbolt.crowdin.com/.
+Translations for this repository are managed directly within this repository under `resources/locales/<locale>/default.po`. You can propose translation improvements or new language translations by submitting a Pull Request.

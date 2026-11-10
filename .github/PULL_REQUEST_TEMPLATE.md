@@ -1,7 +1,7 @@
 ##IMPORTANT: PLEASE READ
 
-The best way to propose a feature is to open an issue on the community forum and discuss your 
-ideas there before implementing them: https://community.passbolt.com/
+The best way to propose a feature is to open a discussion on the community forum and discuss your 
+ideas there before implementing them: https://github.com/pbolt-dev/pbolt-docs/discussions
 
 This is only a issue tracker for issues related to the Passbolt API.
 For passbolt docker, browser extension, command line interface, in short any other issues 
