@@ -43,7 +43,7 @@ class MfaVerifiedToken
         UserAccessControl $uac,
         string $provider,
         string $sessionId,
-        ?bool $remember = false
+        ?bool $remember = false,
     ): string {
         /** @var \App\Model\Table\AuthenticationTokensTable $AuthenticationTokens */
         $AuthenticationTokens = TableRegistry::getTableLocator()->get('AuthenticationTokens');
@@ -97,7 +97,7 @@ class MfaVerifiedToken
         string $tokenString,
         ?SessionIdentificationServiceInterface $sessionIdentificationService = null,
         ?ServerRequest $request = null,
-        ?RememberAMonthSettingInterface $rememberMeForAMonthSetting = null
+        ?RememberAMonthSettingInterface $rememberMeForAMonthSetting = null,
     ): bool {
         // Baseline validity check
         /** @var \App\Model\Table\AuthenticationTokensTable $auth */
@@ -162,7 +162,40 @@ class MfaVerifiedToken
 
         foreach ($mfaTokens as $token) {
             $token->active = false;
-            $AuthenticationTokens->save($token);
         }
+
+        $AuthenticationTokens->saveManyOrFail($mfaTokens);
+    }
+
+    /**
+     * Set all token by provider as inactive
+     *
+     * @param \App\Utility\UserAccessControl $uac user access control
+     * @param string $provider provider name
+     * @return void
+     */
+    public static function setAllInactiveByProvider(UserAccessControl $uac, string $provider): void
+    {
+        $AuthenticationTokens = TableRegistry::getTableLocator()->get('AuthenticationTokens');
+        /** @var array<\App\Model\Entity\AuthenticationToken> $mfaTokens */
+        $mfaTokens = $AuthenticationTokens->find()
+            ->where(['user_id' => $uac->getId(), 'type' => AuthenticationToken::TYPE_MFA])
+            ->all()
+            ->toArray();
+
+        $mfaTokensFiltered = array_filter($mfaTokens, function ($token) use ($provider) {
+            $tokenData = json_decode($token->data, true);
+            if (isset($tokenData['provider'])) {
+                if ($tokenData['provider'] === $provider) {
+                    $token->active = false;
+
+                    return $token;
+                }
+            }
+
+            return false;
+        });
+
+        $AuthenticationTokens->saveManyOrFail($mfaTokensFiltered);
     }
 }

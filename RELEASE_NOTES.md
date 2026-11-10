@@ -1,54 +1,46 @@
-Release song: https://youtu.be/SLNqxQXMV1w?si=O4XNvcGI-_vByG2x
+Release song: https://www.youtube.com/watch?v=Hef-Zf6frk0
 
-## [5.15.0] - 2026-08-20
+## [5.17.0] - 2026-10-20
 ### Added
-- PB-53238 Adds a healthcheck to warn users about PHP 8.2 end of life
-- PB-53302 Adds a V5150CreateSessionsTable migration to support database session storage
-- PB-53303 Adds a PurgeSessions command to prune expired database sessions
-- PB-53547 Adds a V5150AddSessionsModifiedIndex migration to speed up session cleanup
-- PB-53548 Adds a healthcheck entry reporting which session provider the application is using
-- PB-53639 Adds a healthcheck warning admins the SSO egress guard is off and will default on in the next version
-- PB-53885 Adds an allowDeleteAdministrators configuration to guard SCIM administrator deletion
+- PB-53318 As a user I can add passkeys as multifactor authentication provider
+- PB-54953 As a user I can use passkeys as multifactor authenticator from the Passbolt mobile app
+- PB-39607 As an administrator I can cleanup soft-delete active resources that no longer have an associated secret
+- PB-54494 As an administrator I can configure SCIM admin token expiry and the near-expiry window
+- PB-54498 Adds a healthcheck warning administrators when a SCIM admin token is nearing expiry
+- PB-54499 As an administrator I get notified by email when a SCIM admin token is near expiry or has expired
+- PB-55263 Adds an "Is encrypted for its recipient" data check in secrets
 
 ### Fixed
-- PB-44325 Hides the "last logged in" timestamp for non-admins from the API
-- PB-49590 Extends the admin-deletion email notification to also fire when a non-admin user is deleted
-- PB-52221 HTML-escapes SMTP trace data in the webinstaller before rendering
-- PB-52453 Closes personal-folder sharing bypass via blank metadata_key_type (Aikido#31150196)
-- PB-52454 Blocks non-admin promotion of a V5 personal tag to shared via PUT /tags/{id} (Aikido#31150196)
-- PB-52456 Blocks non-owner from unlinking shared V5 tags via POST /resources/{id}/tags (Aikido#31150196)
-- PB-53146 Removes stack traces from missing-route exception responses
-- PB-53180 Preserves historical permission levels in the activity log by no longer overwriting permissions_history on update
-- PB-53260 Preserves resource tags and favorite information when one of a user's accesses is revoked but not all
-- PB-53561 Rejects JWT tokens for disabled users
-- PB-53563 Excludes sessions from the SQL dump command
-- PB-53567 Rejects invisible characters in role names
-- PB-53725 Fixes SessionPreventExtensionMiddleware creating a phantom session row for unauthenticated requests when SESSION_DEFAULTS=database
-- PB-53815 Rejects invisible characters in group names, profile fields, resource names, folder names, and tag slugs
+- PB-54495 Adds a ScimTokenExpiryChecker service to compute SCIM admin token expiry state
+- PB-54496 Rejects SCIM requests presenting an expired admin token at authentication time
+- PB-54497 Adds a ScimUnauthenticatedResponseMiddleware returning a structured 401 payload on SCIM auth failure
+- PB-53970 Flushes all users' MFA settings when an administrator disables MFA for the organization
+- PB-54696 Shortens the TTL of mfa_setup and mfa_verify authentication tokens
+- PB-54701 Enforces one active MFA ceremony handle per user
+- PB-54828 Fixes a null type value in the ResourceTypes slug definition
+- PB-54830 Adds an index on the users.username column to speed up user lookups
+- PB-54831 Adds a composite index on scim_entries(scim_name, foreign_model) to speed up SCIM lookups
+- PB-54832 Adds a retry loop to UserScimResource::create() to withstand concurrent SCIM writes
+- PB-54833 Maps 500 responses from the SCIM endpoint to 429 with a Retry-After header on concurrency conflicts
+- PB-54856 Reduces the number of queries inside the loop in FoldersRelationsSortService
+- PB-54857 Adds a limit to isItemPersonal() when checking if an item is personal
+- PB-54858 Improves setSecretRevisionInData() to not search the full collection each time
+- PB-54980 Fixes the wrong CTA URL in offline mode emails
+- PB-54990 Deactivates all authentication tokens on user soft-delete
+- PB-55138 Reduces PASSBOLT_AUTH_JWT_REFRESH_TOKEN expiry to 1 hour
 
 ### Security
-- PB-53111 Makes single-use authentication-token consumption atomic to prevent concurrent replay
-- PB-53210 Fixes security vulnerability advisories affecting the guzzlehttp/guzzle package (AIKIDO-2026-231561, GHSA-wm3w-8rrp-j577, AIKIDO-2026-793560, GHSA-94pj-82f3-465w)
-- PB-53215 Fixes SSO Provider URL allowing private-network SSRF (MFK-01)
-- PB-53223 Fixes stored XSS in the Account-Recovery Policy Update email (MFK-06)
-- PB-53357 Upgrades js-yaml (GCVE-0-2026-59869)
-- PB-53780 Upgrades squizlabs/php_codesniffer to 3.13.6 (CVE-2026-67434)
-- PB-53952 Upgrades js-yaml (GHSA-5p4m-2wfm-xmqj)
+- PB-53564 Excludes authentication tokens from the SQL dump command
+- PB-54638 Fixes blind SSRF via avatar upload (AL-02)
+- PB-54640 Fixes MFA brute-force limiter not counting failed TOTP codes submitted to the JSON endpoint (AL-01)
+- PB-54703 Fixes SSRF egress guard bypass in SSO provider URL validation (AS-01)
+- PB-55268 Fixes braces security vulnerability GHSA-vfj7-8cjw-p6xm (CVSS 3.1 HIGH)
 
 ### Maintenance
-- PB-51984 Removes remaining differences in the Webinstaller between CE and PRO repositories (MEP WP 7.2)
-- PB-53119 Migrates SettingsIndexController logic into a dedicated Service layer
-- PB-53270 Updates release version in file headers of the new user finders/tests (HLL)
-- PB-53407 Upgrades CakePHP to v5.4.1
-- PB-53453 Upgrades guzzlehttp/guzzle to 7.15.2
-- PB-53655 Removes the config/schema/sessions.sql file
-- PB-53874 Wires plugin table associations via Model.initialize instead of plugin bootstrap()
-- Renovate: Update dependency phpstan/phpstan to v1.12.34
-- Renovate: Update dependency duosecurity/duo_universal_php to v1.2.0
-- Renovate: Update dependency cakephp/authentication to v3.3.7
-- Renovate: Update dependency league/flysystem to v3.35.2
-- Renovate: Update dependency league/oauth2-client to v2.9.0
-- Renovate: Update dependency ramsey/uuid to v4.9.3
-- Renovate: Update dependency spomky-labs/otphp to v11.5.0
-- Renovate: Update dependency firebase/php-jwt to v7.1.0
+- Renovate: Update dependency league/oauth2-client to v2.9.1
+- Renovate: Update dependency firebase/php-jwt to v7.1.1
+- Renovate: Update dependency psalm/phar to v6.17.1
+- Renovate: Update dependency ergebnis/phpunit-slow-test-detector to v2.25.0
+- Renovate: Update dependency cakephp/cakephp-codesniffer to v5.3.2
+- Renovate: Update dependency league/flysystem to v3.36.0
 - Renovate: Update adminer:standalone Docker digest

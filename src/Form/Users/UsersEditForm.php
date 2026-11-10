@@ -19,6 +19,7 @@ namespace App\Form\Users;
 
 use Cake\Form\Form;
 use Cake\Validation\Validator;
+use Psr\Http\Message\UploadedFileInterface;
 
 class UsersEditForm extends Form
 {
@@ -53,8 +54,23 @@ class UsersEditForm extends Form
     public function execute(array $data, array $options = []): bool
     {
         $data = $this->sanitizeData($data, $this->allowedKeys);
+        $data = $this->stripNonUploadedAvatarFile($data);
 
         return parent::execute($data, $options);
+    }
+
+    /**
+     * @param array $data Sanitized data
+     * @return array
+     */
+    protected function stripNonUploadedAvatarFile(array $data): array
+    {
+        $file = $data['profile']['avatar']['file'] ?? null;
+        if ($file !== null && !$file instanceof UploadedFileInterface) {
+            unset($data['profile']['avatar']['file']);
+        }
+
+        return $data;
     }
 
     /**
@@ -80,7 +96,7 @@ class UsersEditForm extends Form
             if (array_is_list($allowed)) {
                 $sanitizedData[$key] = array_intersect_key(
                     $data[$key],
-                    array_flip($allowed)
+                    array_flip($allowed),
                 );
             } else {
                 $sanitizedData[$key] = $this->sanitizeData($data[$key], $allowed);

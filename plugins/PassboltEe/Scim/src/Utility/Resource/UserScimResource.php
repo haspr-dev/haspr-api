@@ -37,6 +37,7 @@ use Passbolt\Scim\Exception\ConflictException;
 use Passbolt\Scim\Exception\NotSupportedException;
 use Passbolt\Scim\Exception\ResourceNotFoundException;
 use Passbolt\Scim\Exception\ScimException;
+use Passbolt\Scim\Exception\ScimTooManyRequestsException;
 use Passbolt\Scim\Log\ScimLog;
 use Passbolt\Scim\Model\Entity\ScimEntry;
 use Passbolt\Scim\Model\Table\ScimEntriesTable;
@@ -51,6 +52,7 @@ use Passbolt\Scim\Utility\ScimConstants;
 use Passbolt\Scim\Utility\ScimResourceInterface;
 use Passbolt\Scim\Utility\ScimResources;
 use Passbolt\Scim\Utility\ScimTools;
+use PDOException;
 
 /**
  * UserResource class
@@ -231,12 +233,12 @@ class UserScimResource implements ScimResourceInterface
         $this->userEntity = $userEntity;
         if (!$this->userEntity) {
             throw new ResourceNotFoundException(
-                sprintf('The %s resource with id `%s` was not found', $this->getType(), $internalId)
+                sprintf('The %s resource with id `%s` was not found', $this->getType(), $internalId),
             );
         }
         if ($this->userEntity->deleted) {
             throw new ResourceNotFoundException(
-                sprintf('The %s resource with id `%s` is already deleted', $this->getType(), $internalId)
+                sprintf('The %s resource with id `%s` is already deleted', $this->getType(), $internalId),
             );
         }
 
@@ -258,6 +260,67 @@ class UserScimResource implements ScimResourceInterface
     {
         $this->validateCreatePreconditions();
 
+        $user = $this->createUser();
+
+        $this->setFromDatabase($user->id);
+
+        return $this;
+    }
+
+    /**
+     * @return \App\Model\Entity\User
+     * @throws \PDOException When the database reports an error that is not a deadlock.
+     * @throws \Passbolt\Scim\Exception\ScimTooManyRequestsException When every attempt deadlocked.
+     * @throws \Random\RandomException When the system has no source of randomness.
+     */
+    private function createUser(): User
+    {
+        $maxAttemptsAllowed = 3;
+        $delayInMicroseconds = 100000; // 0.1s
+        $maxExtraDelayInMicroseconds = 100000;
+
+        $attempt = 1;
+
+        while (true) {
+            try {
+                return $this->createUserInTransaction();
+            } catch (PDOException $exception) {
+                if (!$this->isDeadlockException($exception)) {
+                    throw $exception;
+                }
+
+                if ($attempt >= $maxAttemptsAllowed) {
+                    ScimLog::error(sprintf(
+                        'The SCIM user creation stopped after %d database deadlocks.',
+                        $maxAttemptsAllowed,
+                    ));
+
+                    throw new ScimTooManyRequestsException(
+                        __('The server is busy, please try after some time.'),
+                        1,
+                        $exception,
+                    );
+                }
+
+                ScimLog::error(sprintf(
+                    'A database deadlock stopped the SCIM user creation on attempt %d of %d.',
+                    $attempt,
+                    $maxAttemptsAllowed,
+                ));
+
+                // A fixed delay can re-collide, hence added a jitter via random_int
+                usleep($delayInMicroseconds + random_int(0, $maxExtraDelayInMicroseconds));
+                $attempt++;
+            }
+        }
+    }
+
+    /**
+     * @return \App\Model\Entity\User
+     */
+    private function createUserInTransaction(): User
+    {
+        /** @var \App\Model\Entity\User $user */
         $user = $this->Users->getConnection()->transactional(
             function (): User {
                 $user = $this->findAndLockExistingUser();
@@ -271,12 +334,29 @@ class UserScimResource implements ScimResourceInterface
                 $this->createScimEntry($user);
 
                 return $user;
-            }
+            },
         );
 
-        $this->setFromDatabase($user->id);
+        return $user;
+    }
 
-        return $this;
+    /**
+     * @param \PDOException $exception Exception object.
+     * @return bool
+     */
+    private function isDeadlockException(PDOException $exception): bool
+    {
+        // MySQL, MariaDB and Postgres use `40001`. Postgres also uses `40P01`.
+        $deadlockSqlStates = ['40001', '40P01'];
+
+        $original = $exception->getPrevious();
+        if (!$original instanceof PDOException) {
+            $original = $exception;
+        }
+
+        $sqlState = $original->errorInfo[0] ?? null;
+
+        return in_array($sqlState, $deadlockSqlStates, true);
     }
 
     /**
@@ -298,7 +378,7 @@ class UserScimResource implements ScimResourceInterface
                 sprintf(
                     'The %s resource with id `%s` could not be created due to a uniqueness conflict',
                     $this->getType(),
-                    $this->id
+                    $this->id,
                 ),
                 scimType: ScimException::SCIM_TYPE_UNIQUENESS,
             );
@@ -340,7 +420,7 @@ class UserScimResource implements ScimResourceInterface
             throw new ConflictException(
                 sprintf(
                     'The %s resource could not be created due to a uniqueness conflict',
-                    $this->getType()
+                    $this->getType(),
                 ),
                 scimType: ScimException::SCIM_TYPE_UNIQUENESS,
             );
@@ -374,14 +454,14 @@ class UserScimResource implements ScimResourceInterface
         } catch (ValidationException $exception) {
             throw new ConflictException(
                 $this->getValidationErrorMessage($exception->getEntity()),
-                scimType: ScimException::SCIM_TYPE_INVALID_VALUE
+                scimType: ScimException::SCIM_TYPE_INVALID_VALUE,
             );
         } catch (InternalErrorException $exception) {
             ScimLog::error($exception->getMessage());
             ScimLog::error($exception->getTraceAsString());
             throw new ConflictException(
                 'Unexpected error',
-                scimType: ScimException::SCIM_TYPE_INVALID_VALUE
+                scimType: ScimException::SCIM_TYPE_INVALID_VALUE,
             );
         }
     }
@@ -410,7 +490,7 @@ class UserScimResource implements ScimResourceInterface
         if (!$this->Users->Profiles->save($profile)) {
             throw new ConflictException(
                 $this->getValidationErrorMessage($profile),
-                scimType: ScimException::SCIM_TYPE_INVALID_VALUE
+                scimType: ScimException::SCIM_TYPE_INVALID_VALUE,
             );
         }
 
@@ -605,7 +685,7 @@ class UserScimResource implements ScimResourceInterface
                             case 'emails':
                                 throw new BadRequestException(
                                     'The email can not be changed',
-                                    scimType: ScimException::SCIM_TYPE_MUTABILITY
+                                    scimType: ScimException::SCIM_TYPE_MUTABILITY,
                                 );
                             default:
                                 // ignore attributes not used in this application
@@ -636,7 +716,7 @@ class UserScimResource implements ScimResourceInterface
                             case 'emails':
                                 throw new BadRequestException(
                                     'The email can not be changed',
-                                    scimType: ScimException::SCIM_TYPE_MUTABILITY
+                                    scimType: ScimException::SCIM_TYPE_MUTABILITY,
                                 );
                             default:
                                 // ignore attributes not used in this application
@@ -662,7 +742,7 @@ class UserScimResource implements ScimResourceInterface
                             case 'emails':
                                 throw new BadRequestException(
                                     'The email can not be changed',
-                                    scimType: ScimException::SCIM_TYPE_MUTABILITY
+                                    scimType: ScimException::SCIM_TYPE_MUTABILITY,
                                 );
                             default:
                                 // ignore attributes not used in this application
@@ -670,7 +750,7 @@ class UserScimResource implements ScimResourceInterface
                         break;
                     default:
                         throw new NotSupportedException(
-                            sprintf('The operation type `%s` is not supported or invalid', $operation->getType())
+                            sprintf('The operation type `%s` is not supported or invalid', $operation->getType()),
                         );
                 }
             }
@@ -792,7 +872,7 @@ class UserScimResource implements ScimResourceInterface
 
                         throw new ConflictException(
                             $this->getValidationErrorMessage($this->userEntity),
-                            scimType: ScimException::SCIM_TYPE_INVALID_VALUE
+                            scimType: ScimException::SCIM_TYPE_INVALID_VALUE,
                         );
                     }
                 }
@@ -822,7 +902,7 @@ class UserScimResource implements ScimResourceInterface
 
                         throw new ConflictException(
                             $this->getValidationErrorMessage($scimEntry),
-                            scimType: ScimException::SCIM_TYPE_INVALID_VALUE
+                            scimType: ScimException::SCIM_TYPE_INVALID_VALUE,
                         );
                     }
                 }
@@ -939,8 +1019,8 @@ class UserScimResource implements ScimResourceInterface
             throw new ScimException(
                 sprintf(
                     'The values of the %s resource has not been set for the `delete` operation',
-                    $this->getType()
-                )
+                    $this->getType(),
+                ),
             );
         }
 
@@ -953,7 +1033,7 @@ class UserScimResource implements ScimResourceInterface
                 if (isset($errors['id']['soleOwnerOfSharedContent'])) {
                     // @todo: send email
                     throw new ConflictException(
-                        'The user cannot be deleted because its the sole owner of shared content'
+                        'The user cannot be deleted because its the sole owner of shared content',
                     );
                 }
                 throw new ConflictException('The User resource could not be deleted due to validation failure');
@@ -978,8 +1058,8 @@ class UserScimResource implements ScimResourceInterface
             throw new ScimException(
                 sprintf(
                     'The values of the %s resource has not been set for the `toSCIM` operation',
-                    $this->getType()
-                )
+                    $this->getType(),
+                ),
             );
         }
         if (empty($this->userEntity->scim_entry)) {

@@ -29,6 +29,7 @@ class MfaSettings
     public const PROVIDER_TOTP = 'totp';
     public const PROVIDER_DUO = 'duo';
     public const PROVIDER_YUBIKEY = 'yubikey';
+    public const PROVIDER_WEBAUTHN = 'webauthn';
 
     public const ORG_SETTINGS = 'MfaOrganizationSettings';
     public const ACCOUNT_SETTINGS = 'MfaAccountSettings';
@@ -71,7 +72,7 @@ class MfaSettings
         MfaOrgSettings $orgSettings,
         ?MfaAccountSettings $accountSettings,
         UserAccessControl $uac,
-        MfaSortWithLastUsedProviderFirstService $sortProvidersService
+        MfaSortWithLastUsedProviderFirstService $sortProvidersService,
     ) {
         $this->accountSettings = $accountSettings;
         $this->orgSettings = $orgSettings;
@@ -112,7 +113,7 @@ class MfaSettings
             $orgSettings,
             $accountSettings,
             $uac,
-            new MfaSortWithLastUsedProviderFirstService()
+            new MfaSortWithLastUsedProviderFirstService(),
         );
 
         return self::$instance;
@@ -139,6 +140,7 @@ class MfaSettings
             self::PROVIDER_TOTP,
             self::PROVIDER_DUO,
             self::PROVIDER_YUBIKEY,
+            self::PROVIDER_WEBAUTHN,
         ];
     }
 

@@ -30,6 +30,7 @@ use Passbolt\MultiFactorAuthentication\Utility\MfaVerifiedToken;
 class MfaIntegrationTestCase extends AppIntegrationTestCase
 {
     use JwtAuthTestTrait;
+    use MfaAuthenticationTokensTestTrait;
     use MfaAccountSettingsTestTrait;
     use MfaOrgSettingsTestTrait;
     use UserAccessControlTrait;
@@ -57,7 +58,7 @@ class MfaIntegrationTestCase extends AppIntegrationTestCase
         UserAccessControl $uac,
         ?string $provider = null,
         ?bool $remember = false,
-        ?string $sessionId = ''
+        ?string $sessionId = '',
     ): string {
         if (!isset($provider)) {
             throw new InternalErrorException('Cannot mock mfa verification without provider.');

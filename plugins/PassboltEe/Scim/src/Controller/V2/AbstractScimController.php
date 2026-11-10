@@ -21,6 +21,7 @@ use App\Controller\AppController;
 use Cake\Event\EventInterface;
 use Cake\Routing\Router;
 use Exception;
+use Passbolt\Scim\Exception\ScimTooManyRequestsException;
 use Passbolt\Scim\Log\ScimLog;
 use Passbolt\Scim\Utility\Object\ScimErrorResponse;
 use Passbolt\Scim\Utility\ScimConstants;
@@ -56,6 +57,17 @@ abstract class AbstractScimController extends AppController
     protected function processException(string $settingId, Exception $e): void
     {
         $status = $this->resolveHttpStatus($e);
+
+        // Add retry-after headers to the response
+        if ($e instanceof ScimTooManyRequestsException) {
+            $response = $this->getResponse();
+            foreach ($e->getHeaders() as $header => $value) {
+                $response = $response->withHeader($header, $value);
+            }
+
+            $this->setResponse($response);
+        }
+
         $this->processResponse($settingId, new ScimErrorResponse($e, $status), $status);
     }
 
@@ -82,7 +94,7 @@ abstract class AbstractScimController extends AppController
             'SCIM endpoint caught non-HTTP exception (%s, code=%s): %s',
             get_class($e),
             var_export($code, true),
-            $e->getMessage()
+            $e->getMessage(),
         ));
         ScimLog::error($e->getTraceAsString());
 

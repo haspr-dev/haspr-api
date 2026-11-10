@@ -35,6 +35,8 @@
             <directory name="plugins/PassboltEe/PasswordPoliciesUpdate/templates/" />
             <directory name="plugins/PassboltEe/UserPassphrasePolicies/templates/" />
             <directory name="plugins/PassboltCe/Edition/templates/" />
+            <directory name="plugins/PassboltCe/OfflineMode/templates/" />
+            <directory name="plugins/PassboltEe/Scim/templates/" />
         </ignoreFiles>
     </projectFiles>
 

@@ -26,6 +26,7 @@ use Cake\ORM\TableRegistry;
 use Passbolt\Folders\Model\Table\FoldersRelationsTable;
 use Passbolt\Folders\Model\Table\FoldersTable;
 use Passbolt\Folders\Test\Factory\FolderFactory;
+use Passbolt\Folders\Test\Factory\FoldersRelationFactory;
 use Passbolt\Folders\Test\Factory\ResourceFactory;
 use Passbolt\Folders\Test\Lib\FoldersTestCase;
 use Passbolt\Folders\Test\Lib\Model\FoldersModelTrait;
@@ -105,7 +106,7 @@ class FoldersRelationsTableTest extends FoldersTestCase
             'foreign_model',
             self::getDummyFolderRelation(),
             self::getDummyFolderRelationsEntityDefaultOptions(),
-            $testCases
+            $testCases,
         );
     }
 
@@ -121,7 +122,7 @@ class FoldersRelationsTableTest extends FoldersTestCase
             'foreign_id',
             self::getDummyFolderRelation(),
             self::getDummyFolderRelationsEntityDefaultOptions(),
-            $testCases
+            $testCases,
         );
     }
 
@@ -137,7 +138,7 @@ class FoldersRelationsTableTest extends FoldersTestCase
             'user_id',
             self::getDummyFolderRelation(),
             self::getDummyFolderRelationsEntityDefaultOptions(),
-            $testCases
+            $testCases,
         );
     }
 
@@ -152,7 +153,7 @@ class FoldersRelationsTableTest extends FoldersTestCase
             'folder_parent_id',
             self::getDummyFolderRelation(),
             self::getDummyFolderRelationsEntityDefaultOptions(),
-            $testCases
+            $testCases,
         );
     }
 
@@ -262,5 +263,36 @@ class FoldersRelationsTableTest extends FoldersTestCase
         $errors = $folder->getErrors();
         $this->assertNotEmpty($errors);
         $this->assertNotNull($errors['user_id']['user_is_not_soft_deleted']);
+    }
+
+    public function testFoldersRelationsTable_IsItemPersonal_SingleRelation()
+    {
+        /** @var \Passbolt\Folders\Model\Entity\Folder $folder */
+        $folder = FolderFactory::make()->persist();
+        FoldersRelationFactory::make()->foreignModelFolder($folder)->persist();
+
+        $this->assertTrue($this->FoldersRelations->isItemPersonal($folder->id));
+    }
+
+    public function testFoldersRelationsTable_IsItemPersonal_MultipleRelations()
+    {
+        /** @var \Passbolt\Folders\Model\Entity\Folder $folder */
+        $folder = FolderFactory::make()->persist();
+        FoldersRelationFactory::make(3)->foreignModelFolder($folder)->persist();
+
+        $this->assertFalse($this->FoldersRelations->isItemPersonal($folder->id));
+    }
+
+    public function testFoldersRelationsTable_IsItemPersonal_NoRelation()
+    {
+        /** @var \Passbolt\Folders\Model\Entity\Folder $folder */
+        $folder = FolderFactory::make()->persist();
+
+        $this->assertFalse($this->FoldersRelations->isItemPersonal($folder->id));
+    }
+
+    public function testFoldersRelationsTable_IsItemPersonal_ForeignIdIsNull()
+    {
+        $this->assertFalse($this->FoldersRelations->isItemPersonal(null));
     }
 }

@@ -22,6 +22,9 @@ use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
 use Cake\Routing\Router;
+use Passbolt\JwtAuthentication\Service\Middleware\JwtAuthenticationService;
+use Passbolt\JwtAuthentication\Service\RefreshToken\RefreshTokenAbstractService;
+use Passbolt\JwtAuthentication\Service\RefreshToken\RefreshTokenLogoutService;
 use Passbolt\MultiFactorAuthentication\Service\MfaPolicies\RememberAMonthSettingInterface;
 use Passbolt\MultiFactorAuthentication\Utility\MfaVerifiedCookie;
 use Passbolt\MultiFactorAuthentication\Utility\MfaVerifiedToken;
@@ -64,7 +67,7 @@ abstract class MfaVerifyController extends MfaController
      */
     protected function _handleVerifiedNotRequired(
         SessionIdentificationServiceInterface $sessionIdentificationService,
-        ?RememberAMonthSettingInterface $rememberMeForAMonthSetting = null
+        ?RememberAMonthSettingInterface $rememberMeForAMonthSetting = null,
     ) {
         // Mfa cookie is set and a valid token
         $uac = $this->User->getAccessControl();
@@ -75,7 +78,7 @@ abstract class MfaVerifyController extends MfaController
                 $mfaVerifiedToken,
                 $sessionIdentificationService,
                 $this->getRequest(),
-                $rememberMeForAMonthSetting
+                $rememberMeForAMonthSetting,
             );
             if ($isValid) {
                 throw new BadRequestException(__('The multi-factor authentication is not required.'));
@@ -106,7 +109,7 @@ abstract class MfaVerifyController extends MfaController
             // for example a user is trying to force a check on a provider that is not set for the org
             if ($this->getRequest()->is('json')) {
                 throw new BadRequestException(
-                    __('No valid multi-factor authentication settings found for this provider.')
+                    __('No valid multi-factor authentication settings found for this provider.'),
                 );
             } else {
                 return $this->redirect('/');
@@ -127,7 +130,7 @@ abstract class MfaVerifyController extends MfaController
     protected function _generateMFaToken(
         string $provider,
         SessionIdentificationServiceInterface $sessionIdentificationService,
-        RememberAMonthSettingInterface $rememberMeForAMonthSetting
+        RememberAMonthSettingInterface $rememberMeForAMonthSetting,
     ) {
         $uac = $this->User->getAccessControl();
         $sessionId = $sessionIdentificationService->getSessionIdentifier($this->getRequest());
@@ -158,5 +161,23 @@ abstract class MfaVerifyController extends MfaController
             $redirect = $this->SanitizeUrl->sanitizeRedirect('/mfa/verify');
             $this->redirect(Router::url($redirect, true));
         }
+    }
+
+    /**
+     * @return void
+     */
+    protected function _logoutOnMfaFailure(): void
+    {
+        $isJwtAuth = ($this->getRequest()->getAttribute('authentication') instanceof JwtAuthenticationService);
+
+        if ($isJwtAuth) {
+            (new RefreshTokenLogoutService())->logout($this->User->id(), $this->getRequest());
+            $cookies = $this->getResponse()->getCookieCollection()->remove(
+                RefreshTokenAbstractService::REFRESH_TOKEN_COOKIE,
+            );
+            $this->setResponse($this->getResponse()->withCookieCollection($cookies));
+        }
+
+        $this->Authentication->logout();
     }
 }

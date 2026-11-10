@@ -78,6 +78,7 @@ class UsersTable extends Table implements TableCleanupProviderInterface
 
     public const AFTER_REGISTER_SUCCESS_EVENT_NAME = 'Model.Users.afterRegister.success';
     public const AFTER_SELF_REGISTER_SUCCESS_EVENT_NAME = 'Model.Users.afterSelfRegister.success';
+    public const EVENT_MODEL_USERS_AFTER_SOFT_DELETE = 'Model.Users.afterSoftDelete';
     public const PASSBOLT_SECURITY_USERNAME_CASE_SENSITIVE = 'passbolt.security.username.caseSensitive';
     public const PASSBOLT_SECURITY_USERNAME_LOWER_CASE = 'passbolt.security.username.lowerCase';
 
@@ -371,7 +372,7 @@ class UsersTable extends Table implements TableCleanupProviderInterface
                         ],
                     ],
                 ],
-            ]
+            ],
         );
     }
 
@@ -535,8 +536,16 @@ class UsersTable extends Table implements TableCleanupProviderInterface
         $Favorites = TableRegistry::getTableLocator()->get('Favorites');
         $Favorites->deleteAll(['user_id' => $user->id]);
 
+        $this->deleteQuery()
+            ->delete('webauthn_credentials')
+            ->where(['user_id' => $user->id])
+            ->execute();
+
         // Mark gpg ke as deleted
         $this->Gpgkeys->updateAll(['deleted' => true], ['user_id' => $user->id]);
+
+        // Set authentication tokens as inactive
+        $this->AuthenticationTokens->updateAll(['active' => false], ['user_id' => $user->id, 'active' => true]);
 
         // Mark scim_entry as deleted
         if ($this->hasAssociation('ScimEntries')) {
@@ -561,6 +570,10 @@ class UsersTable extends Table implements TableCleanupProviderInterface
             $msg = __('Could not delete the user {0}, please try again later.', $user->username);
             throw new InternalErrorException($msg);
         }
+
+        // Notify other components about the user soft delete.
+        $event = new Event(self::EVENT_MODEL_USERS_AFTER_SOFT_DELETE, $user);
+        $this->getEventManager()->dispatch($event);
 
         return $entitiesChanges;
     }

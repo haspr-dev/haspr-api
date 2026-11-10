@@ -64,6 +64,14 @@ class SsoSettingsOAuth2DataFormTest extends AppTestCase
                 'test_cases' => [
                     'https://login.generic-openid.test' => true,
                     'login.generic-openid.test' => false,
+                    // Unsupported hosts
+                    'https://2130706433' => false,
+                    'https://2852039166' => false,
+                    'https://0177.0.0.1' => false,
+                    'https://0x7f000001' => false,
+                    'https://127.1' => false,
+                    'https://0' => false,
+                    'https://127.0.0.1.' => false,
                 ],
             ],
         ];
@@ -87,7 +95,7 @@ class SsoSettingsOAuth2DataFormTest extends AppTestCase
             SsoSettingsOAuth2DataForm::class,
             'data.openid_configuration_path',
             $this->getOauth2DummySettingsData(),
-            $testCases
+            $testCases,
         );
     }
 
@@ -104,7 +112,7 @@ class SsoSettingsOAuth2DataFormTest extends AppTestCase
             SsoSettingsOAuth2DataForm::class,
             'data.client_id',
             $this->getOauth2DummySettingsData(),
-            $testCases
+            $testCases,
         );
     }
 
@@ -121,7 +129,7 @@ class SsoSettingsOAuth2DataFormTest extends AppTestCase
             SsoSettingsOAuth2DataForm::class,
             'data.client_secret',
             $this->getOauth2DummySettingsData(),
-            $testCases
+            $testCases,
         );
     }
 
@@ -137,7 +145,7 @@ class SsoSettingsOAuth2DataFormTest extends AppTestCase
             SsoSettingsOAuth2DataForm::class,
             'data.scope',
             $this->getOauth2DummySettingsData(),
-            $testCases
+            $testCases,
         );
     }
 }
