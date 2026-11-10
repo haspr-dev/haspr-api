@@ -1,4 +1,112 @@
-<svg width="228" height="228" viewBox="0 0 228 228" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M221.267 96.9432L128.576 11.0142C124.612 7.42246 119.422 5.42871 114.035 5.42871C108.648 5.42871 103.457 7.42246 99.4941 11.0142L41.3308 65.1688C48.9497 67.9538 55.7935 72.4689 61.306 78.3472C66.8186 84.2255 70.8444 91.3012 73.0562 98.9991H151.577C152.534 98.9991 153.481 99.185 154.365 99.5463C155.249 99.9076 156.051 100.437 156.727 101.104C157.402 101.772 157.937 102.564 158.301 103.435C158.665 104.306 158.851 105.24 158.847 106.181V117.97C158.851 118.912 158.665 119.845 158.301 120.717C157.937 121.588 157.402 122.38 156.727 123.047C156.051 123.715 155.249 124.244 154.365 124.605C153.481 124.967 152.534 125.152 151.577 125.152H142.509V141.833C142.516 142.774 142.333 143.707 141.972 144.578C141.611 145.449 141.079 146.241 140.405 146.909C139.732 147.577 138.931 148.107 138.049 148.468C137.167 148.83 136.22 149.016 135.265 149.016H115.357C114.401 149.016 113.455 148.83 112.572 148.468C111.69 148.107 110.889 147.577 110.216 146.909C109.542 146.241 109.01 145.449 108.649 144.578C108.288 143.707 108.106 142.774 108.113 141.833V125.152H73.0562C70.9527 132.935 66.9694 140.101 61.4455 146.042C55.9215 151.982 49.0206 156.52 41.3308 159.269L99.7584 213.502C103.722 217.093 108.912 219.087 114.299 219.087C119.686 219.087 124.877 217.093 128.84 213.502L221.373 127.625C223.477 125.639 225.149 123.254 226.288 120.613C227.428 117.972 228.01 115.131 228 112.262C227.99 109.393 227.388 106.555 226.231 103.922C225.073 101.289 223.385 98.9146 221.267 96.9432V96.9432Z" fill="#D40101"/>
-<path d="M24.1113 88.5898C20.3309 88.6637 16.613 89.552 13.2188 91.1922C9.42311 93.0459 6.19911 95.8636 3.88004 99.3543C1.56097 102.845 0.230992 106.882 0.0274677 111.048C-0.176056 115.214 0.754324 119.358 2.72241 123.051C4.6905 126.745 7.62493 129.854 11.2224 132.058C14.8199 134.261 18.95 135.479 23.1858 135.586C27.4217 135.693 31.6096 134.684 35.3169 132.664C39.0241 130.644 42.1162 127.687 44.2735 124.097C46.4308 120.507 47.5751 116.416 47.5881 112.245C47.6622 109.165 47.1096 106.101 45.963 103.234C44.8163 100.367 43.0988 97.7543 40.9114 95.5503C38.7239 93.3462 36.1107 91.595 33.2256 90.3997C30.3404 89.2043 27.2416 88.589 24.1113 88.5898V88.5898Z" fill="#D40101"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#182338"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+
+    <!-- Cyan / Teal Gradients -->
+    <linearGradient id="cyanShackleLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22e9f7"/>
+      <stop offset="100%" stop-color="#08b6d4"/>
+    </linearGradient>
+
+    <linearGradient id="cyanShackleTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38fdf8"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+
+    <linearGradient id="cyanShackleRight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <linearGradient id="cyanBracketLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <!-- Deep Blue Body Gradients -->
+    <linearGradient id="blueBodyRight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+
+    <linearGradient id="blueStemLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#1e3a8a"/>
+    </linearGradient>
+
+    <linearGradient id="blueFacetCenter" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Gold / Amber Lightning Gradients -->
+    <linearGradient id="goldBolt" x1="70%" y1="0%" x2="30%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="30%" stop-color="#facc15"/>
+      <stop offset="70%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+
+    <linearGradient id="goldBraceRight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+
+    <linearGradient id="goldBraceLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+
+    <linearGradient id="goldTip" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="160" fill="url(#bgGrad)"/>
+
+  <g id="pbolt-mark">
+    <!-- Padlock Shackle / P Upper Arch - Left -->
+    <polygon id="shackle-left" points="370.0,268.5 403.0,270.5 436.0,287.5 459.5,315.0 471.5,349.0 441.0,395.5 436.5,348.0 422.5,323.0 397.0,303.5 364.0,302.5 350.5,313.0 343.5,329.0 342.5,414.0 331.0,421.5 316.0,419.5 310.5,414.0 310.5,331.0 315.5,310.0 334.0,283.5" fill="url(#cyanShackleLeft)"/>
+
+    <!-- Padlock Shackle / P Upper Arch - Top / Center -->
+    <polygon id="shackle-top" points="444.0,268.5 611.5,269.0 491.5,448.0 562.5,454.0 533.0,499.5 519.0,507.5 513.0,504.5 513.0,509.5 486.0,520.5 479.5,515.0 487.0,492.5 402.5,492.0 491.5,354.0 477.5,306.0" fill="url(#cyanShackleTop)"/>
+
+    <!-- Padlock Shackle / P Upper Arch - Right -->
+    <polygon id="shackle-right" points="634.0,268.5 678.0,268.5 756.5,347.0 756.5,390.0 752.0,398.5 723.5,406.0 720.5,364.0 663.0,306.5 616.5,306.0" fill="url(#cyanShackleRight)"/>
+
+    <!-- Body / P Stem - Lower Right Loop / Bracket -->
+    <polygon id="body-right" points="720.0,364.5 724.0,405.5 753.0,397.5 755.0,388.5 756.5,392.0 756.5,521.0 677.0,600.5 517.0,600.5 543.0,563.5 662.0,563.5 719.5,506.0" fill="url(#blueBodyRight)"/>
+
+    <!-- Body / P Stem - Left Facet -->
+    <polygon id="body-left" points="267.0,436.5 372.0,498.5 368.0,512.5 392.5,516.0 374.0,537.5 345.0,533.5 338.5,546.0 341.5,569.0 293.0,613.5 280.0,609.5 266.5,589.0" fill="url(#cyanBracketLeft)"/>
+
+    <!-- Body / P Stem - Lower Shield / Stem Facet -->
+    <polygon id="body-stem" points="388.0,512.5 458.5,513.0 392.0,674.5 285.5,613.0 306.0,605.5 343.0,563.5 349.5,573.0 344.5,606.0 372.0,622.5 369.5,583.0 377.5,577.0 380.5,565.0 367.5,538.0 390.5,520.0" fill="url(#blueStemLeft)"/>
+
+    <!-- Body - Center Dark Contrast Facet -->
+    <polygon id="body-center" points="540.0,488.5 389.0,735.5 478.5,516.0 485.0,520.5 513.0,508.5 512.0,504.5 519.0,507.5" fill="url(#blueFacetCenter)"/>
+
+    <!-- Left Code Bracket Accent '{' -->
+    <polygon id="code-bracket-left" points="359.0,393.5 419.5,429.0 382.0,487.5 273.5,422.0 274.5,413.0 295.0,399.5 297.5,419.0 306.0,429.5 326.0,435.5 339.0,433.5 354.5,422.0" fill="url(#goldBraceLeft)"/>
+
+    <!-- Right Code Bracket Accent '}' -->
+    <polygon id="code-bracket-right" points="636.0,358.5 666.0,358.5 676.5,364.0 681.5,415.0 697.5,428.0 696.5,443.0 681.5,455.0 679.5,500.0 664.0,511.5 635.5,510.0 636.0,492.5 660.5,490.0 662.5,450.0 674.5,436.0 662.5,420.0 661.5,381.0 637.0,377.5" fill="url(#goldBraceRight)"/>
+
+    <!-- Central Lightning Bolt (Cutting through 'P') -->
+    <polygon id="lightning-bolt-main" points="605.0,282.5 539.5,424.0 619.0,425.5 618.5,429.0 396.0,730.5 564.5,454.0 562.0,449.5 493.5,447.0" fill="url(#goldBolt)" filter="url(#glow)"/>
+
+    <!-- Bottom Bolt Tip Accent -->
+    <polygon id="lightning-bolt-tip" points="502.0,619.5 503.5,727.0 425.0,728.5" fill="url(#goldTip)"/>
+  </g>
 </svg>

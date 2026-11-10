@@ -1,122 +1,50 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/passbolt/passbolt_styleguide/blob/master/src/img/logo/logo_white.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/passbolt/passbolt_styleguide/blob/master/src/img/logo/logo.svg">
-  <img alt="passbolt-logo" src="https://github.com/passbolt/passbolt_styleguide/blob/master/src/img/logo/logo.svg">
-</picture>
-<br>
-<br>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/pbolt-dev/.github/main/assets/pbolt-logo.svg" alt="pbolt logo" width="160" height="160" />
+</p>
 
-The open source password manager for teams.
+<h1 align="center">pbolt-api</h1>
 
-[![License](https://img.shields.io/github/license/passbolt/passbolt)](LICENSE.txt)
-[![PHPStan Enabled](https://img.shields.io/badge/PHPStan-level%206-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
-[![Psalm level](https://img.shields.io/badge/Psalm-level%204-brightgreen.svg?style=flat)](https://psalm.dev/)
+<p align="center">
+  <strong>Community backend API distribution for the pbolt ecosystem, compatible with Passbolt.</strong>
+</p>
 
-
-<details open="open">
-<summary>Table of Contents</summary>
-
-- [Introducing Passbolt](#introducing-passbolt)
-- [Get Started](#get-started)
-  - [Run it on your own server, natively](#run-it-on-your-own-server-natively)
-- [Available Clients & Apps](#available-clients-and-apps)
-  - [Browser Extensions](#browser-extensions)
-  - [Mobile Apps](#mobile-apps)
-  - [CLI](#cli)
-  - [Desktop App](#desktop-app)
-- [Contributing](#contributing)
-- [Reporting a security issue](#reporting-a-security-issue)
-- [License](#license)
-
-</details>
+<p align="center">
+  <a href="https://github.com/pbolt-dev/pbolt-api/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/pbolt-dev/pbolt-api" alt="License" /></a>
+  <a href="https://github.com/pbolt-dev/go-pbolt-cli"><img src="https://img.shields.io/badge/CLI-go--pbolt--cli-0bddec?style=flat-square&logo=go" alt="go-pbolt-cli" /></a>
+  <a href="https://github.com/pbolt-dev/pbolt-browser-extension"><img src="https://img.shields.io/badge/Extension-pbolt--browser--extension-f9a912?style=flat-square" alt="Browser Extension" /></a>
+</p>
 
 ---
-<br>
 
-![Passbolt on desktop, mobile, and cli](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/passbolt-insitu.png)
+## ⚡ Overview
 
-# Introducing Passbolt
+**pbolt-api** is the backend application distribution for the **pbolt** ecosystem. It provides the REST API, cryptographic authentication routines, and database management while maintaining complete API compatibility with Passbolt clients and extensions.
 
-Passbolt is a security-first, open source password manager for teams. It helps organizations centralize, organize and share passwords and secrets securely.
+---
 
-What makes passbolt different?
-- **Security:** Passbolt security model features user-owned secret keys and end-to-end encryption. It is audited multiple times annually, and [findings](https://help.passbolt.com/faq/security/code-review) are made public.
-- **Collaboration:** Securely share and audit credentials, with powerful and dependable policies for power users.
-- **Privacy:** Passbolt is headquartered in the EU :european_union: specifically in Luxembourg. Passbolt doesn't collect personal data or telemetry, and can be deployed in an air-gapped environment.
+## 📦 Clients & Apps
 
-<br>
+- **Browser Extension**: [pbolt-browser-extension](https://github.com/pbolt-dev/pbolt-browser-extension) (Firefox, Chrome, Edge)
+- **CLI & Credential Agent**: [go-pbolt-cli](https://github.com/pbolt-dev/go-pbolt-cli)
+- **Go SDK**: [go-pbolt](https://github.com/pbolt-dev/go-pbolt)
+- **Styleguide & Themes**: [pbolt-styleguide](https://github.com/pbolt-dev/pbolt-styleguide)
 
-# Get Started
+---
 
-<a href="https://www.passbolt.com/ce/">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/passbolt/passbolt-links/blob/main/assets/readme/passbolt-CE-cta-light.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/passbolt/passbolt-links/blob/main/assets/readme/passbolt-CE-cta-dark.png">
-  <img alt="passbolt community edition CTA" src="https://github.com/passbolt/passbolt-links/blob/main/assets/readme/passbolt-CE-cta-dark.png">
-</picture>
-</a>
-&nbsp; &nbsp;
-<a href="https://www.passbolt.com/contact/pro/free-trial">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/passbolt/passbolt-links/blob/main/assets/readme/passbolt-pro-cta-light.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/passbolt/passbolt-links/blob/main/assets/readme/passbolt-pro-cta-dark.png">
-  <img alt="passbolt PRO edition CTA" src="https://github.com/passbolt/passbolt-links/blob/main/assets/readme/passbolt-pro-cta-dark.png">
-</picture>
-</a>
-&nbsp; &nbsp;
-<a href="https://www.passbolt.com/cloud/signup">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/passbolt/passbolt-links/blob/main/assets/readme/passbolt-cloud-cta-light.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/passbolt/passbolt-links/blob/main/assets/readme/passbolt-cloud-cta-dark.png">
-  <img alt="passbolt Cloud edition CTA" src="https://github.com/passbolt/passbolt-links/blob/main/assets/readme/passbolt-cloud-cta-dark.png">
-</picture>
-</a>
-<br>
+## 🛠️ Development & Contributing
 
-### Run it on your own server, natively
+Please check [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on code style, automated testing, and development environments.
 
-|[![Install passbolt on Docker](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/docker-icon.svg)](https://www.passbolt.com/ce/docker) | [![Install passbolt on Kubernetes](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/kubernetes-icon.svg)](https://www.passbolt.com/ce/kubernetes) | [![Install passbolt on Ubuntu](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/ubuntu-icon.svg)](https://www.passbolt.com/ce/ubuntu) |[![Install passbolt on Debian](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/debian-icon.svg)](https://www.passbolt.com/ce/debian) | [![Install passbolt on RedHat](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/Redhat-icon.svg)](https://www.passbolt.com/ce/redhat) | [![Install passbolt on Raspberry Pi](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/raspberry-pi-icon.svg)](https://www.passbolt.com/ce/raspberry)  | [![Install passbolt on RockyLinux](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/rockylinux-icon.svg)](https://www.passbolt.com/ce/rockylinux) |
-|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| [![Install passbolt on AlmaLinux](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/almalinux-icon.svg)](https://www.passbolt.com/ce/almalinux) | [![Install passbolt on Oracle](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/oracle-icon.svg)](https://www.passbolt.com/ce/oracle)  | [![Install passbolt on Fedora](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/fedora-icon.svg)](https://www.passbolt.com/ce/fedora) | [![Install passbolt on openSuse](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/openSUSE-icon.svg)](https://www.passbolt.com/ce/opensuse)  | [![Install passbolt on AWS](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/AWS-icon.svg)](https://www.passbolt.com/ce/aws) |  [![Install passbolt on DigitalOcean](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/digitalocean-icon.svg)](https://www.passbolt.com/ce/digitalocean) | [![Install passbolt on CentOS](https://github.com/passbolt/passbolt-links/blob/main/assets/readme/centos-icon.svg)](https://www.passbolt.com/ce/centos) |
+---
 
-<br>
+## ⚖️ Trademark Notice
 
-## Available Clients And Apps
+*Passbolt is a registered trademark of Passbolt SA. **pbolt** is an independent community project and is not affiliated with, endorsed by, or sponsored by Passbolt SA.*
 
-### Browser Extensions
+---
 
-- [Chrome](https://chrome.google.com/webstore/detail/passbolt-open-source-pass/didegimhafipceonhjepacocaffmoppf) - Brave, Opera, Vivaldi, & other Chromium browsers
-- [Firefox](https://addons.mozilla.org/en-US/firefox/addon/passbolt/)
-- [Edge](https://microsoftedge.microsoft.com/addons/detail/passbolt-open-source-pa/ljeppgjhohmhpbdhjjjbiflabdgfkhpo)
-
-### Mobile Apps
-
-- [App Store](https://apps.apple.com/nz/app/passbolt-password-manager/id1569629432)
-- [Google Play Store](https://play.google.com/store/apps/details?id=com.passbolt.mobile.android)
-
-### CLI
-
-Install passbolt CLI tool: [go-passbolt-CLI](https://github.com/passbolt/go-passbolt-cli)
-
-### Desktop App
-Coming soon [see the pre-alpha version here](https://github.com/passbolt/passbolt-windows).
-
-<br>
-
-# Contributing
-
-Please check [CONTRIBUTING.md](CONTRIBUTING.md) for more information about how to get involved.
-
-# Reporting a security Issue
-
-If you've found a security related issue in Passbolt, please don't open an issue on GitHub. Follow our responsible disclosure process: https://www.passbolt.com/docs/contribute/security/vulnerability/.
-
-# License
+## 📄 License
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License (AGPL) as published by the Free Software Foundation version 3.
 
-The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate agreement with Passbolt SA.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License along with this program. If not, see [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.html).
+See [LICENSE.txt](LICENSE.txt) for full copyright and licensing details.
