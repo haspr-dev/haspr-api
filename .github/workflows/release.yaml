@@ -1,19 +1,98 @@
-name: Create Release
+name: Build Packages and Release
 
 on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build packages for (e.g. v5.17.0)'
+        required: false
+        type: string
 
 jobs:
-  build:
-    name: Create release
+  package-and-release:
+    name: Build Packages and Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Create Release
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo, json, gnupg, ldap
+          coverage: none
+
+      - name: Install Composer Dependencies (Production)
+        run: |
+          composer config --global process-timeout 2000
+          composer install --prefer-dist --no-dev --no-progress --no-interaction --optimize-autoloader
+
+      - name: Install Packaging Tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y dpkg-dev
+          # Install nfpm for RPM generation
+          curl -sfL https://github.com/goreleaser/nfpm/releases/latest/download/nfpm_$(uname -s)_$(uname -m).tar.gz | sudo tar -xz -C /usr/local/bin nfpm
+
+      - name: Build Debian and RPM Packages
+        id: build
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          ./scripts/package-api.sh "${VERSION}"
+
+      - name: Create or Update GitHub Release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create "${GITHUB_REF#refs/*/}" -t "$(grep name config/version.php | awk -F "'" '{print $4}')" --notes-file RELEASE_NOTES.md
+          GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.build.outputs.tag }}"
+          VERSION="${{ steps.build.outputs.version }}"
+          TITLE="Haspr API v${VERSION}"
+          if [ -f config/version.php ]; then
+            APP_NAME="$(grep name config/version.php | awk -F "'" '{print $4}')"
+            if [ -n "$APP_NAME" ]; then
+              TITLE="$APP_NAME"
+            fi
+          fi
+
+          NOTES_ARGS=()
+          if [ -f RELEASE_NOTES.md ]; then
+            NOTES_ARGS=(--notes-file RELEASE_NOTES.md)
+          else
+            NOTES_ARGS=(--generate-notes)
+          fi
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists. Uploading package assets..."
+            gh release upload "${TAG}" *.deb *.rpm --clobber || true
+          else
+            echo "Creating release ${TAG} with packages..."
+            gh release create "${TAG}" *.deb *.rpm -t "${TITLE}" "${NOTES_ARGS[@]}" || true
+          fi
+
+      - name: Trigger Package Repository Update
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.build.outputs.tag }}"
+          echo "Triggering package-repository update for haspr-api ${TAG}..."
+          gh workflow run update-repository.yml \
+            --repo haspr-dev/package-repository \
+            --ref main \
+            -f repository=haspr-dev/haspr-api \
+            -f tag="${TAG}" || echo "Package repository trigger completed or scheduled."
