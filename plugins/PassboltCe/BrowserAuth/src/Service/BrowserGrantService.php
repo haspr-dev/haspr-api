@@ -26,7 +26,10 @@ class BrowserGrantService
      */
     public function create(string $userId, array $binding, ?string $mfaToken): AuthenticationToken
     {
-        return $this->fetchTable('AuthenticationTokens')->generate($userId, self::TYPE, null, [
+        /** @var \App\Model\Table\AuthenticationTokensTable $tokensTable */
+        $tokensTable = $this->fetchTable('AuthenticationTokens');
+
+        return $tokensTable->generate($userId, self::TYPE, null, [
             'challenge' => $binding['challenge'],
             'fingerprint' => $binding['fingerprint'],
             // Revalidated on exchange: revocation between approval and exchange must take effect.

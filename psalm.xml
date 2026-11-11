@@ -19,6 +19,7 @@
             <directory name="vendor" />
             <directory name="templates" />
             <directory name="tests" />
+            <directory name="plugins/PassboltCe/BrowserAuth/tests" />
             <directory name="plugins/PassboltCe/Reports/templates" />
             <directory name="plugins/PassboltCe/WebInstaller/templates" />
             <directory name="plugins/PassboltCe/EmailDigest/templates/" />

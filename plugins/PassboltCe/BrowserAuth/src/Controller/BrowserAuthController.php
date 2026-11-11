@@ -52,8 +52,11 @@ class BrowserAuthController extends AppController
             throw new BadRequestException($e->getMessage());
         }
         $uac = $this->User->getAccessControl();
+        /** @var \App\Model\Entity\User $user */
         $user = $this->fetchTable('Users')->get($uac->getId(), contain: ['Gpgkeys']);
-        if (!hash_equals(strtoupper($user->gpgkey->fingerprint), $binding['fingerprint'])) {
+        /** @var \App\Model\Entity\Gpgkey $gpgkey */
+        $gpgkey = $user->gpgkey;
+        if (!hash_equals(strtoupper($gpgkey->fingerprint), $binding['fingerprint'])) {
             throw new ForbiddenException('The browser account does not match the CLI account.');
         }
         $mfa = null;
