@@ -14,7 +14,9 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const STYLEGUIDE = 'node_modules/passbolt-styleguide';
+const STYLEGUIDE = fs.existsSync('node_modules/haspr-styleguide')
+  ? 'node_modules/haspr-styleguide'
+  : 'node_modules/passbolt-styleguide';
 const WEBROOT = 'webroot';
 
 function copy(src, dest, filter) {

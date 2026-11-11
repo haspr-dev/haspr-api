@@ -9,8 +9,8 @@ on:
       - master
 
 jobs:
-  validate:
-    name: Validate & Lint
+  static-analysis:
+    name: Static Analysis (PHPStan, Psalm, PHPCS)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,7 +35,52 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
+        run: |
+          composer config --global process-timeout 2000
+          composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run PHPStan
+        run: composer stan
+
+      - name: Run Psalm
+        run: composer psalm
+
+      - name: Run PHP_CodeSniffer
+        run: composer cs-check
+
+  security-audit:
+    name: Composer Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run Composer Audit
+        run: composer audit --locked
+
+  frontend:
+    name: Frontend Assets & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -48,3 +93,72 @@ jobs:
 
       - name: Run npm lint
         run: npm run lint
+
+      - name: Build / copy assets
+        run: |
+          npm run copy:dependencies
+          npm run copy:styleguide
+          npm run copy:locales
+
+  phpunit:
+    name: PHPUnit Tests
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: test
+          MARIADB_USER: passbolt
+          MARIADB_PASSWORD: passbolt
+        ports:
+          - 3306:3306
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo, pdo_mysql, json, gnupg, ldap
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Setup test environment
+        env:
+          DATASOURCES_DEFAULT_HOST: 127.0.0.1
+          DATASOURCES_DEFAULT_DATABASE: test
+          DATASOURCES_DEFAULT_USERNAME: passbolt
+          DATASOURCES_DEFAULT_PASSWORD: passbolt
+        run: |
+          cp config/app.default.php config/app.php
+          gpg --import config/gpg/unsecure_private.key
+          gpg --import config/gpg/unsecure.key
+          ./bin/cake passbolt create_jwt_keys
+
+      - name: Run PHPUnit
+        env:
+          PASSBOLT_GPG_SERVER_KEY_PUBLIC: config/gpg/unsecure.key
+          PASSBOLT_GPG_SERVER_KEY_PRIVATE: config/gpg/unsecure_private.key
+          PASSBOLT_GPG_SERVER_KEY_FINGERPRINT: 2FC8945833C51946E937F9FED47B0811573EE67E
+          DATASOURCES_DEFAULT_HOST: 127.0.0.1
+          DATASOURCES_DEFAULT_DATABASE: test
+          DATASOURCES_DEFAULT_USERNAME: passbolt
+          DATASOURCES_DEFAULT_PASSWORD: passbolt
+          DATASOURCES_TEST_HOST: 127.0.0.1
+          DATASOURCES_TEST_DATABASE: test
+          DATASOURCES_TEST_USERNAME: passbolt
+          DATASOURCES_TEST_PASSWORD: passbolt
+        run: composer test
