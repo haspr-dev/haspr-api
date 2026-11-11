@@ -31,7 +31,7 @@
     "lint:lockfile": "lockfile-lint --path package-lock.json --allowed-hosts npm github.com --allowed-schemes \"https:\" \"git+ssh:\" --empty-hostname false"
   },
   "dependencies": {
-    "react-router-dom": "^5.3.4"
+    "react-router-dom": "^7.18.5"
   },
   "overrides": {
     "uuid": "^14.0.0",
