@@ -287,4 +287,12 @@ $routes->plugin('Passbolt/Sso', ['path' => '/sso'], function (RouteBuilder $rout
             'action' => 'index',
         ])
         ->setMethods(['GET']);
+
+    $routes->connect('/user-mappings/sync', [
+            'prefix' => 'UserMappings',
+            'controller' => 'SsoUserMappingsSync',
+            'action' => 'sync',
+        ])
+        ->setMethods(['PUT'])
+        ->setMiddleware([SsoEndpointsSecurityMiddleware::class]);
 });

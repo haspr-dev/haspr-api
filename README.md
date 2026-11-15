@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/haspr-dev/haspr-api/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/haspr-dev/haspr-api" alt="License" /></a>
-  <a href="https://github.com/haspr-dev/go-pbolt-cli"><img src="https://img.shields.io/badge/CLI-go--pbolt--cli-0bddec?style=flat-square&logo=go" alt="CLI" /></a>
+  <a href="https://github.com/haspr-dev/go-haspr-cli"><img src="https://img.shields.io/badge/CLI-go--haspr--cli-0bddec?style=flat-square&logo=go" alt="CLI" /></a>
   <a href="https://github.com/haspr-dev/haspr-browser-extension"><img src="https://img.shields.io/badge/Extension-haspr--browser--extension-f9a912?style=flat-square" alt="Browser Extension" /></a>
 </p>
 
@@ -25,8 +25,8 @@
 ## 📦 Clients & Apps
 
 - **Browser Extension**: [haspr-browser-extension](https://github.com/haspr-dev/haspr-browser-extension) (Firefox, Chrome, Edge)
-- **CLI & Credential Agent**: [go-pbolt-cli](https://github.com/haspr-dev/go-pbolt-cli)
-- **Go SDK**: [go-pbolt](https://github.com/haspr-dev/go-pbolt)
+- **CLI & Credential Agent**: [go-haspr-cli](https://github.com/haspr-dev/go-haspr-cli)
+- **Go SDK**: [go-haspr](https://github.com/haspr-dev/go-haspr)
 - **Styleguide & Themes**: [haspr-styleguide](https://github.com/haspr-dev/haspr-styleguide)
 
 ---

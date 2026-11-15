@@ -56,6 +56,11 @@ class SsoSettingsOAuth2DataForm extends BaseSsoSettingsForm
             ->ascii('scope', __('The scope should be a valid string.'))
             ->maxLength('scope', 256, __('The scope is too large.'));
 
+        $validator
+            ->allowEmptyString('mapping_claim')
+            ->utf8('mapping_claim', __('The mapping claim should be a valid BMP-UTF8 string.'))
+            ->maxLength('mapping_claim', 256, __('The mapping claim is too large.'));
+
         return $validator;
     }
 

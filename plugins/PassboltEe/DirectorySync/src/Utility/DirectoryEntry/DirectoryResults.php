@@ -277,8 +277,11 @@ class DirectoryResults
         if (!$ldapObject->hasAttribute($idAttribute) && $dn) {
             /** @psalm-suppress InvalidArgument it takes args, not an array */
             $ldapObject->setAttribute($idAttribute, UuidFactory::uuid($dn));
-        } else {
+        } elseif (!$ldapObject->hasAttribute($idAttribute)) {
             $ldapObject->setAttribute($idAttribute, $ldapObject->getConvertedGuid());
+        } else {
+            $value = $ldapObject->getFirstAttribute($idAttribute);
+            $ldapObject->setAttribute($idAttribute, $value);
         }
 
         return $ldapObject;

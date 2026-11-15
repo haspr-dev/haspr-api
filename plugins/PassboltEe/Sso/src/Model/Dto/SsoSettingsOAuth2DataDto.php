@@ -48,6 +48,11 @@ class SsoSettingsOAuth2DataDto implements SsoSettingsDataDtoInterface
     public string $scope;
 
     /**
+     * @var string
+     */
+    public string $mapping_claim;
+
+    /**
      * Constructor.
      *
      * @param array $data with
@@ -65,6 +70,7 @@ class SsoSettingsOAuth2DataDto implements SsoSettingsDataDtoInterface
         $this->client_secret = $data['client_secret'] ?? '';
         $this->openid_configuration_path = $data['openid_configuration_path'] ?? '';
         $this->scope = $data['scope'] ?? '';
+        $this->mapping_claim = $data['mapping_claim'] ?? 'sub';
     }
 
     /**
@@ -78,6 +84,7 @@ class SsoSettingsOAuth2DataDto implements SsoSettingsDataDtoInterface
             'client_secret' => $this->client_secret,
             'openid_configuration_path' => $this->openid_configuration_path,
             'scope' => $this->scope,
+            'mapping_claim' => $this->mapping_claim,
         ];
     }
 }

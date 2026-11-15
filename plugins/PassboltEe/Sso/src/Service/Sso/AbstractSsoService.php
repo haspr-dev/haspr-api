@@ -22,21 +22,29 @@ use App\Model\Validation\EmailValidationRule;
 use App\Service\Cookie\AbstractSecureCookieService;
 use App\Service\Users\UserGetService;
 use App\Utility\ExtendedUserAccessControl;
+use Cake\Core\Plugin;
 use Cake\Event\EventDispatcherTrait;
 use Cake\Http\Cookie\Cookie;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\InternalErrorException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Log\Log;
+use Cake\ORM\TableRegistry;
 use Exception;
+use LdapRecord\Models\Entry;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use Passbolt\DirectorySync\Utility\DirectoryInterface;
+use Passbolt\DirectorySync\Utility\DirectoryOrgSettings;
+use Passbolt\DirectorySync\Utility\LdapDirectory;
 use Passbolt\Sso\Model\Dto\SsoSettingsDto;
 use Passbolt\Sso\Model\Entity\SsoAuthenticationToken;
 use Passbolt\Sso\Model\Entity\SsoState;
 use Passbolt\Sso\Service\SsoAuthenticationTokens\SsoAuthenticationTokenSetService;
 use Passbolt\Sso\Service\SsoStates\SsoStatesAssertService;
 use Passbolt\Sso\Service\SsoStates\SsoStatesSetService;
+use Passbolt\Sso\Service\SsoUserMappings\SsoUserMappingsGetService;
+use Passbolt\Sso\Service\SsoUserMappings\SsoUserMappingsSetService;
 use Passbolt\Sso\Utility\OpenId\SsoResourceOwnerInterface;
 
 abstract class AbstractSsoService
@@ -284,9 +292,145 @@ abstract class AbstractSsoService
      */
     public function assertResourceOwnerAgainstUser(SsoResourceOwnerInterface $resourceOwner, User $user): void
     {
-        if (mb_strtolower($resourceOwner->getEmail()) !== mb_strtolower($user->username)) {
+        if ($this->matchesUserByConfiguredClaim($resourceOwner, $user)) {
+            return;
+        }
+        $resourceEmail = mb_strtolower($resourceOwner->getEmail());
+        if ($resourceEmail !== mb_strtolower($user->username) && !$this->checkLdapFallback($user, $resourceEmail)) {
             $msg = __('Single sign-on failed.') . ' ' . __('Username mismatch.');
             throw new BadRequestException($msg);
+        }
+        $this->persistConfiguredClaimForUser($resourceOwner, $user);
+    }
+
+    /**
+     * Get the configured OIDC claim name used for user mapping.
+     *
+     * @param \Passbolt\Sso\Utility\OpenId\SsoResourceOwnerInterface $resourceOwner Resource owner.
+     * @return string
+     */
+    protected function getConfiguredMappingClaim(SsoResourceOwnerInterface $resourceOwner): string
+    {
+        $mappingClaim = isset($this->settings->data) && property_exists($this->settings->data, 'mapping_claim')
+            ? $this->settings->data->mapping_claim
+            : null;
+
+        return is_string($mappingClaim) && $mappingClaim !== '' ? $mappingClaim : 'sub';
+    }
+
+    /**
+     * Get the value of the configured mapping claim from the resource owner.
+     *
+     * @param \Passbolt\Sso\Utility\OpenId\SsoResourceOwnerInterface $resourceOwner Resource owner.
+     * @return string|null
+     */
+    protected function getResourceOwnerMappingClaimValue(SsoResourceOwnerInterface $resourceOwner): ?string
+    {
+        $claimValue = $resourceOwner->getClaim($this->getConfiguredMappingClaim($resourceOwner));
+
+        return is_string($claimValue) && $claimValue !== '' ? $claimValue : null;
+    }
+
+    /**
+     * Check whether the user matches an existing persisted SSO claim mapping.
+     *
+     * @param \Passbolt\Sso\Utility\OpenId\SsoResourceOwnerInterface $resourceOwner Resource owner.
+     * @param \App\Model\Entity\User $user User entity.
+     * @return bool
+     */
+    protected function matchesUserByConfiguredClaim(SsoResourceOwnerInterface $resourceOwner, User $user): bool
+    {
+        if (!isset($this->settings)) {
+            return false;
+        }
+        $claimValue = $this->getResourceOwnerMappingClaimValue($resourceOwner);
+        if ($claimValue === null) {
+            return false;
+        }
+        $mapping = (new SsoUserMappingsGetService())->findByClaim(
+            $this->settings->provider,
+            $this->getConfiguredMappingClaim($resourceOwner),
+            $claimValue
+        );
+
+        return $mapping !== null && $mapping->user_id === $user->id;
+    }
+
+    /**
+     * Persist the configured mapping claim value for the given user.
+     *
+     * @param \Passbolt\Sso\Utility\OpenId\SsoResourceOwnerInterface $resourceOwner Resource owner.
+     * @param \App\Model\Entity\User $user User entity.
+     * @return void
+     */
+    protected function persistConfiguredClaimForUser(SsoResourceOwnerInterface $resourceOwner, User $user): void
+    {
+        if (!isset($this->settings)) {
+            return;
+        }
+        $claimValue = $this->getResourceOwnerMappingClaimValue($resourceOwner);
+        if ($claimValue === null) {
+            return;
+        }
+        try {
+            (new SsoUserMappingsSetService())->createOrUpdateForUser(
+                $user->id,
+                $this->settings->provider,
+                $this->getConfiguredMappingClaim($resourceOwner),
+                $claimValue
+            );
+        } catch (Exception $e) {
+            Log::warning('Could not persist SSO user mapping: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Check if the resource owner email matches the user's LDAP directory entry email.
+     *
+     * @param \App\Model\Entity\User $user User entity.
+     * @param string $resourceEmail Resource owner email.
+     * @return bool
+     */
+    protected function checkLdapFallback(User $user, string $resourceEmail): bool
+    {
+        if (!Plugin::isLoaded('Passbolt/DirectorySync')) {
+            return false;
+        }
+        /** @var \Passbolt\DirectorySync\Model\Entity\DirectoryEntry|null $directoryEntry */
+        $directoryEntry = TableRegistry::getTableLocator()->get('Passbolt/DirectorySync.DirectoryEntries')
+            ->find()
+            ->where(['foreign_model' => 'Users', 'foreign_key' => $user->id])
+            ->first();
+        if ($directoryEntry === null) {
+            return false;
+        }
+        try {
+            $directorySettings = DirectoryOrgSettings::get();
+            if (!$directorySettings->isEnabled()) {
+                return false;
+            }
+            $ldapDirectory = new LdapDirectory($directorySettings);
+            $directoryType = $ldapDirectory->getDirectoryType();
+            $mappingRules = $ldapDirectory->getMappingRules();
+            $emailAttribute = $mappingRules[$directoryType][DirectoryInterface::ENTRY_TYPE_USER]['username'] ?? null;
+            $attributes = array_unique(array_filter(['mail', $emailAttribute]));
+            $ldapUser = Entry::find($directoryEntry->directory_name, $attributes);
+            if (!$ldapUser instanceof Entry) {
+                return false;
+            }
+            $candidateEmails = [];
+            foreach ($attributes as $attribute) {
+                $value = $ldapUser->getFirstAttribute($attribute);
+                if (is_string($value) && $value !== '') {
+                    $candidateEmails[] = mb_strtolower($value);
+                }
+            }
+
+            return in_array($resourceEmail, $candidateEmails, true);
+        } catch (Exception $e) {
+            Log::warning('Could not use LDAP fallback for SSO: ' . $e->getMessage());
+
+            return false;
         }
     }
 

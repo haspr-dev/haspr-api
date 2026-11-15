@@ -71,6 +71,24 @@ class AbstractSsoAzureServiceTest extends SsoTestCase
         $sut->assertResourceOwnerAgainstUser($resourceOwner, $user);
     }
 
+    public function testSsoAbstractSsoAzureService_assertResourceOwnerAgainstUser_Fallback_Success()
+    {
+        $username = 'email@test.test';
+        $user = UserFactory::make()->setField('username', $username)->getEntity();
+
+        $sut = $this->getMockBuilder(TestableSsoService::class)
+            ->onlyMethods(['checkLdapFallback'])
+            ->getMock();
+        $sut->method('checkLdapFallback')->willReturn(true);
+
+        $resourceOwner = $this->getMockBuilder(SsoResourceOwnerInterface::class)->getMock();
+        $resourceOwner->method('getEmail')->willReturn('different@test.test');
+
+        $sut->assertResourceOwnerAgainstUser($resourceOwner, $user);
+
+        $this->assertTrue(true);
+    }
+
     public function testSsoAbstractSsoAzureService_assertResourceOwnerAgainstSsoState_Success()
     {
         $ssoState = SsoStateFactory::make()->withTypeSsoSetSettings()->persist();

@@ -62,6 +62,14 @@ class OAuth2ResourceOwner implements ResourceOwnerInterface, SsoResourceOwnerInt
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getClaim(string $name): mixed
+    {
+        return $this->data[$name] ?? null;
+    }
+
+    /**
      * Returns all the data obtained about the user.
      *
      * @return array

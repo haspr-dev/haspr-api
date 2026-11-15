@@ -26,6 +26,14 @@ interface SsoResourceOwnerInterface
     public function getEmail(): mixed;
 
     /**
+     * Returns raw claim value if present in data.
+     *
+     * @param string $name claim name
+     * @return mixed
+     */
+    public function getClaim(string $name): mixed;
+
+    /**
      * Returns nonce if present in data.
      *
      * @return string|null
