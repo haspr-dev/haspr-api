@@ -17,7 +17,7 @@
   "license": "AGPL-3.0",
   "homepage": "https://doc.haspr.dev",
   "devDependencies": {
-    "@babel/runtime": "^7.27.0",
+    "@babel/runtime": "^8.1.2",
     "@babel/runtime-corejs3": "^7.26.10",
     "lockfile-lint": "^5.0.1",
     "openpgp": "^5.11.3",
